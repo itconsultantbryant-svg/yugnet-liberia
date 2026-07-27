@@ -1,10 +1,14 @@
 # YUGNet-Liberia — Render Blueprint
 # Backend (Next.js API + SSR fallback) + PostgreSQL + persistent uploads disk
 # Dashboard: https://dashboard.render.com → New → Blueprint
+#
+# IMPORTANT: Web service + Postgres must share the same region for Internal
+# DATABASE_URL. If they differ, set DATABASE_URL_EXTERNAL to the External URL.
 
 databases:
   - name: yugnet-db
     plan: basic-256mb
+    region: frankfurt
     databaseName: yugnet
     user: yugnet
 
@@ -20,7 +24,7 @@ services:
     # --include=dev: Render sets NODE_ENV=production during build, which would
     # otherwise omit Tailwind/PostCSS and break `next build`.
     buildCommand: npm ci --include=dev && npx prisma generate && npm run build
-    startCommand: npx prisma migrate deploy && npm run start
+    startCommand: bash scripts/start-render.sh
     healthCheckPath: /api/health
     disk:
       name: yugnet-uploads
@@ -33,6 +37,10 @@ services:
         fromDatabase:
           name: yugnet-db
           property: connectionString
+      # If Internal URL fails (P1001 / region mismatch), set this in the dashboard
+      # to the Postgres External connection string (…REGION-postgres.render.com).
+      - key: DATABASE_URL_EXTERNAL
+        sync: false
       - key: AUTH_SECRET
         generateValue: true
       - key: UPLOAD_DIR

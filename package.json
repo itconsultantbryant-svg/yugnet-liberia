@@ -13,7 +13,8 @@
     "db:reset": "prisma migrate reset --force",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate",
-    "start:prod": "prisma migrate deploy && next start"
+    "start:prod": "prisma migrate deploy && next start",
+    "start:render": "bash scripts/start-render.sh"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

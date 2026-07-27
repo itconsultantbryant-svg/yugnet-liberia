@@ -36,10 +36,24 @@ Browser (Lonestar / Orange / Wi‑Fi)
 |---|---|
 | Branch | `main` |
 | Build Command | `npm ci --include=dev && npx prisma generate && npm run build` |
-| Start Command | `npx prisma migrate deploy && npm run start` |
+| Start Command | `bash scripts/start-render.sh` |
 | Health Check Path | `/api/health` |
 
-   Then **Manual Deploy** → **Deploy latest commit** (must show commit `b5ccf85` or newer — not `38cdb16`).
+   Then **Manual Deploy** → **Deploy latest commit**.
+
+### Fix P1001: Can't reach database server at `dpg-…-a:5432`
+
+Build can succeed while **start** fails if the Internal DB host is unreachable (common when Web and Postgres are in **different regions**).
+
+1. Render → your **Postgres** → **Info / Connect**
+2. Confirm status is **Available**
+3. Copy **External Database URL** (host like `dpg-….frankfurt-postgres.render.com`)
+4. Web service → **Environment** → add/set:
+   - `DATABASE_URL_EXTERNAL` = that External URL  
+   (or replace `DATABASE_URL` with it)
+5. Web service → **Settings** → **Start Command** = `bash scripts/start-render.sh`
+6. **Manual Deploy** → **Deploy latest commit**
+7. After healthy deploy, run seed once in **Shell**: `npm run db:seed`
 
 4. Set these env vars when prompted (`sync: false`):
 
@@ -47,7 +61,7 @@ Browser (Lonestar / Orange / Wi‑Fi)
 |---|---|
 | `CORS_ORIGINS` | `https://www.your-domain.lr,https://your-app.vercel.app` |
 | `NEXT_PUBLIC_SITE_URL` | `https://www.your-domain.lr` |
-| Cron `HEALTH_URL` | `https://yugnet-api.onrender.com/api/health` |
+| `DATABASE_URL_EXTERNAL` | External Postgres URL from Render Connect (if Internal fails) |
 
 5. After first deploy succeeds, seed once (Render Shell or one-off job):
 
