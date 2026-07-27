@@ -1,0 +1,16 @@
+# Local Postgres (optional — if you prefer Docker over Homebrew Postgres)
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: yugnet
+      POSTGRES_PASSWORD: yugnet
+      POSTGRES_DB: yugnet
+    ports:
+      - "5432:5432"
+    volumes:
+      - yugnet_pg:/var/lib/postgresql/data
+
+volumes:
+  yugnet_pg:

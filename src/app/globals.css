@@ -1,26 +1,160 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Logo-derived palette */
+  --brand-green: #0a5c32;
+  --brand-green-deep: #003d22;
+  --brand-green-mid: #106030;
+  --brand-green-leaf: #1a9a3c;
+  --brand-green-mist: #e8f2ec;
+  --brand-ink: #0c120e;
+  --brand-muted: #4a5c52;
+  --brand-flag-red: #bf0a30;
+  --brand-flag-blue: #002868;
+  --brand-surface: #f2f6f3;
+  --brand-surface-2: #e4ede7;
+  --brand-line: rgba(10, 92, 50, 0.14);
+  --background: var(--brand-surface);
+  --foreground: var(--brand-ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-brand: var(--brand-green);
+  --color-brand-deep: var(--brand-green-deep);
+  --color-brand-leaf: var(--brand-green-leaf);
+  --color-brand-mist: var(--brand-green-mist);
+  --color-ink: var(--brand-ink);
+  --color-muted: var(--brand-muted);
+  --color-flag-red: var(--brand-flag-red);
+  --color-flag-blue: var(--brand-flag-blue);
+  --color-surface: var(--brand-surface);
+  --color-surface-2: var(--brand-surface-2);
+  --color-line: var(--brand-line);
+  --font-sans: var(--font-source);
+  --font-display: var(--font-sora);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-source), "Segoe UI", sans-serif;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-sora), "Segoe UI", sans-serif;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--brand-green) 28%, white);
+  color: var(--brand-ink);
+}
+
+/* Subtle leaf-vein atmosphere (not flat) */
+.brand-atmosphere {
+  background-color: var(--brand-surface);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(26, 154, 60, 0.12), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(0, 61, 34, 0.1), transparent 50%),
+    linear-gradient(180deg, #f7faf8 0%, var(--brand-surface) 40%, #eaf1ec 100%);
+}
+
+.flag-rule {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 18rem;
+}
+
+.flag-rule::before,
+.flag-rule::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--brand-flag-red) 20%,
+    var(--brand-flag-blue) 50%,
+    var(--brand-flag-red) 80%,
+    transparent
+  );
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes leaf-drift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-rise-delay {
+  animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both;
+}
+
+.animate-rise-delay-2 {
+  animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+.animate-logo {
+  animation: soft-scale 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-drift {
+  animation: leaf-drift 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-rise-delay,
+  .animate-rise-delay-2,
+  .animate-logo,
+  .animate-drift {
+    animation: none;
+  }
 }

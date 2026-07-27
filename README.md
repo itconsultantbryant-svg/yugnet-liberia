@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# YUGNet-Liberia
 
-## Getting Started
+Website & Professional Development Training Platform for **YUGNet-Liberia**.
 
-First, run the development server:
+## Brand
+
+Logo source: `assets/yug-net_liberia.jpg` (copied to `public/brand/logo.jpg`).
+
+Palette derived from the emblem:
+
+| Token | Hex | Use |
+|---|---|---|
+| Brand green | `#0a5c32` | Primary actions, nav active, accents |
+| Deep green | `#003d22` | Footer, hero, portal sidebar |
+| Leaf green | `#1a9a3c` | Highlights, tagline |
+| Ink | `#0c120e` | Body text |
+| Flag red / blue | `#bf0a30` / `#002868` | Accent rules (Liberian flag) |
+
+## Stack
+
+- Next.js (App Router) + TypeScript + Tailwind CSS v4
+- PostgreSQL (Prisma) — required for production and local
+- Public site + Training hub + Admin / Instructor / Student portals
+
+## Develop
 
 ```bash
+cp .env.example .env
+# Set DATABASE_URL to local Postgres and AUTH_SECRET
+npm install
+npx prisma migrate deploy
+npm run db:seed
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy (Vercel frontend + Render backend)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See **[DEPLOY.md](./DEPLOY.md)** for the full checklist.
 
-## Learn More
+Summary:
 
-To learn more about Next.js, take a look at the following resources:
+| Layer | Host | Role |
+|---|---|---|
+| Frontend | **Vercel** (`fra1`) | Pages + same-origin proxy of `/api` & `/uploads` |
+| Backend | **Render** (`frankfurt`) | API, auth, Postgres, upload disk |
+| DB | Render Postgres | Shared by both via `DATABASE_URL` |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Same-origin proxying is intentional so Lonestar and Orange mobile clients are not blocked by cross-site cookies/CORS.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Blueprint: `render.yaml` · Vercel: `vercel.json`
 
-## Deploy on Vercel
+## Phase status
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Phase 1:** Design system, public pages, Training hub shell, portal scaffolds
+- **Phase 2:** Roles, permissions, auth, user management, audit log
+- **Phase 3:** Website CMS — pages/sections, media, testimonials, contact inbox, SEO
+- **Phase 4:** Training courses, categories, instructors (Admin + public catalog)
+- **Phase 5 (current):** Public Training Hub enrollment — signup/login under `/training`, multi-step enroll, student dashboard
+- **Next:** Phase 6 — Admin students & enrollment management
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Demo accounts (after `npm run db:seed`)
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin@yugnet.lr` | `Admin123!` |
+| Instructor | `instructor@yugnet.lr` | `Teach123!` |
+| Student | `student@yugnet.lr` | `Learn123!` |
+
+```bash
+npm run db:deploy    # apply migrations (prod & local)
+npm run db:seed      # seed roles/permissions/demo users + CMS defaults
+npm run dev
+```
+
+Admin CMS: `/admin/website` (requires `content.manage`).
+
+### Public site vs Training Hub
+
+- **Organization site:** About, Programs, Projects, News, Events, Gallery, Resources, Partners, Careers, Contact, Donate — impact & partnerships focused.
+- **Training Hub (`/training`):** courses, lecturers, verify, **signup / login / enroll** (auth CTAs only here).

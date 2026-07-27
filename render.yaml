@@ -1,0 +1,54 @@
+# YUGNet-Liberia — Render Blueprint
+# Backend (Next.js API + SSR fallback) + PostgreSQL + persistent uploads disk
+# Dashboard: https://dashboard.render.com → New → Blueprint
+
+databases:
+  - name: yugnet-db
+    plan: basic-256mb
+    databaseName: yugnet
+    user: yugnet
+
+services:
+  - type: web
+    name: yugnet-api
+    runtime: node
+    plan: starter
+    region: frankfurt
+    # Starter (or higher) stays warm — free tier cold starts often time out
+    # on Lonestar / Orange 3G–4G links.
+    branch: main
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: npx prisma migrate deploy && npm run start
+    healthCheckPath: /api/health
+    disk:
+      name: yugnet-uploads
+      mountPath: /var/data/uploads
+      sizeGB: 2
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: yugnet-db
+          property: connectionString
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: UPLOAD_PUBLIC_PATH
+        value: /uploads
+      - key: CORS_ORIGINS
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+      - key: COOKIE_SAMESITE
+        value: lax
+      - key: COOKIE_SECURE
+        value: "true"
+      # Optional: pin to same secret as Vercel so JWT verifies on both sides
+      - key: PORT
+        value: "10000"
+
+  # Keepalive: ping health from an external monitor (UptimeRobot, cron-job.org)
+  # every 5–10 minutes if you must stay on a sleeping free instance.
+  # Prefer Render Starter so Lonestar/Orange clients do not hit 30–60s cold starts.
