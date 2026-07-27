@@ -41,15 +41,28 @@ Browser (Lonestar / Orange / Wi‑Fi)
 
    Then **Manual Deploy** → **Deploy latest commit**.
 
+### Fix P1012: URL must start with `postgresql://`
+
+`DATABASE_URL_EXTERNAL` must be the **full** connection string, not a hostname.
+
+✅ Correct:
+```text
+postgresql://yugnet:YOUR_PASSWORD@dpg-xxxxx.frankfurt-postgres.render.com/yugnet
+```
+
+❌ Wrong: `dpg-xxxxx-a`  
+❌ Wrong: `psql postgresql://...`  
+❌ Wrong: value wrapped in extra quotes in the env UI
+
 ### Fix P1001: Can't reach database server at `dpg-…-a:5432`
 
 Build can succeed while **start** fails if the Internal DB host is unreachable (common when Web and Postgres are in **different regions**).
 
 1. Render → your **Postgres** → **Info / Connect**
 2. Confirm status is **Available**
-3. Copy **External Database URL** (host like `dpg-….frankfurt-postgres.render.com`)
+3. Copy **External Database URL** (full `postgresql://…` string; host like `dpg-….frankfurt-postgres.render.com`)
 4. Web service → **Environment** → add/set:
-   - `DATABASE_URL_EXTERNAL` = that External URL  
+   - `DATABASE_URL_EXTERNAL` = that full External URL  
    (or replace `DATABASE_URL` with it)
 5. Web service → **Settings** → **Start Command** = `bash scripts/start-render.sh`
 6. **Manual Deploy** → **Deploy latest commit**
