@@ -17,7 +17,9 @@ services:
     # Starter (or higher) stays warm — free tier cold starts often time out
     # on Lonestar / Orange 3G–4G links.
     branch: main
-    buildCommand: npm ci && npx prisma generate && npm run build
+    # --include=dev: Render sets NODE_ENV=production during build, which would
+    # otherwise omit Tailwind/PostCSS and break `next build`.
+    buildCommand: npm ci --include=dev && npx prisma generate && npm run build
     startCommand: npx prisma migrate deploy && npm run start
     healthCheckPath: /api/health
     disk:
@@ -25,8 +27,8 @@ services:
       mountPath: /var/data/uploads
       sizeGB: 2
     envVars:
-      - key: NODE_ENV
-        value: production
+      - key: NODE_VERSION
+        value: "20.18.0"
       - key: DATABASE_URL
         fromDatabase:
           name: yugnet-db
@@ -45,9 +47,6 @@ services:
         value: lax
       - key: COOKIE_SECURE
         value: "true"
-      # Optional: pin to same secret as Vercel so JWT verifies on both sides
-      - key: PORT
-        value: "10000"
 
   # Keepalive: ping health from an external monitor (UptimeRobot, cron-job.org)
   # every 5–10 minutes if you must stay on a sleeping free instance.

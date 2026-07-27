@@ -7,7 +7,13 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function uploadRoot() {
-  return process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
+  if (process.env.UPLOAD_DIR) return process.env.UPLOAD_DIR;
+  // Scope cwd so Turbopack NFT does not trace the whole project.
+  return path.join(
+    /* turbopackIgnore: true */ process.cwd(),
+    "public",
+    "uploads",
+  );
 }
 
 function contentTypeFor(filePath: string) {
@@ -30,7 +36,10 @@ export async function GET(
   ctx: { params: Promise<{ path: string[] }> },
 ) {
   const parts = (await ctx.params).path ?? [];
-  if (!parts.length || parts.some((p) => p.includes("..") || p.includes("/") || p.includes("\\"))) {
+  if (
+    !parts.length ||
+    parts.some((p) => p.includes("..") || p.includes("/") || p.includes("\\"))
+  ) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
