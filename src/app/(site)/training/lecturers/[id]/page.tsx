@@ -11,12 +11,16 @@ export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { id } = await params;
-  const instructor = await prisma.instructor.findFirst({
-    where: { id, published: true },
-  });
-  if (!instructor) return { title: "Lecturer" };
-  return { title: instructor.name, description: instructor.bio || undefined };
+  try {
+    const { id } = await params;
+    const instructor = await prisma.instructor.findFirst({
+      where: { id, published: true },
+    });
+    if (!instructor) return { title: "Lecturer" };
+    return { title: instructor.name, description: instructor.bio || undefined };
+  } catch {
+    return { title: "Lecturer" };
+  }
 }
 
 export default async function LecturerProfilePage({ params }: Params) {

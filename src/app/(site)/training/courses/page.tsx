@@ -21,32 +21,43 @@ export default async function CoursesPage({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  const categories = await prisma.courseCategory.findMany({ orderBy: { name: "asc" } });
+  let categories: Awaited<ReturnType<typeof prisma.courseCategory.findMany>> = [];
+  let courses: Awaited<
+    ReturnType<typeof prisma.course.findMany<{ include: typeof courseInclude }>>
+  > = [];
+  try {
+    categories = await prisma.courseCategory.findMany({ orderBy: { name: "asc" } });
 
-  const where: {
-    status: string;
-    categoryId?: string;
-    level?: string;
-    OR?: { title?: { contains: string }; description?: { contains: string } }[];
-  } = { status: "PUBLISHED" };
+    const where: {
+      status: string;
+      categoryId?: string;
+      level?: string;
+      OR?: { title?: { contains: string }; description?: { contains: string } }[];
+    } = { status: "PUBLISHED" };
 
-  if (params.category) {
-    const cat = categories.find((c) => c.slug === params.category || c.id === params.category);
-    if (cat) where.categoryId = cat.id;
+    if (params.category) {
+      const cat = categories.find(
+        (c) => c.slug === params.category || c.id === params.category,
+      );
+      if (cat) where.categoryId = cat.id;
+    }
+    if (params.level) where.level = params.level;
+    if (params.q?.trim()) {
+      where.OR = [
+        { title: { contains: params.q.trim() } },
+        { description: { contains: params.q.trim() } },
+      ];
+    }
+
+    courses = await prisma.course.findMany({
+      where,
+      include: courseInclude,
+      orderBy: { updatedAt: "desc" },
+    });
+  } catch {
+    categories = [];
+    courses = [];
   }
-  if (params.level) where.level = params.level;
-  if (params.q?.trim()) {
-    where.OR = [
-      { title: { contains: params.q.trim() } },
-      { description: { contains: params.q.trim() } },
-    ];
-  }
-
-  const courses = await prisma.course.findMany({
-    where,
-    include: courseInclude,
-    orderBy: { updatedAt: "desc" },
-  });
 
   const levels = ["Foundational", "Intermediate", "Advanced"];
 

@@ -13,11 +13,18 @@ export const metadata: Metadata = {
 };
 
 export default async function LecturersPage() {
-  const instructors = await prisma.instructor.findMany({
-    where: { published: true },
-    include: instructorInclude,
-    orderBy: { name: "asc" },
-  });
+  let instructors: Awaited<
+    ReturnType<typeof prisma.instructor.findMany<{ include: typeof instructorInclude }>>
+  > = [];
+  try {
+    instructors = await prisma.instructor.findMany({
+      where: { published: true },
+      include: instructorInclude,
+      orderBy: { name: "asc" },
+    });
+  } catch {
+    instructors = [];
+  }
 
   return (
     <>

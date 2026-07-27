@@ -65,7 +65,19 @@ Copy the service URL (e.g. `https://yugnet-api.onrender.com`) and the generated 
 
 **Persistent uploads:** disk mounts at `/var/data/uploads` (`UPLOAD_DIR`). Files are served at `/uploads/...`.
 
-## 2. Vercel (frontend)
+## Vercel DATABASE_URL (critical)
+
+Render Postgres has **two** connection strings:
+
+| Kind | Hostname looks like | Use on |
+|---|---|---|
+| **Internal** | `dpg-xxxxx-a` (no domain) | Render web service **runtime only** |
+| **External** | `dpg-xxxxx-a.REGION-postgres.render.com` | **Vercel**, local tools, and anytime outside Render’s private network |
+
+Builds **cannot** reach the internal hostname (Render build sandbox + Vercel).  
+On Vercel set `DATABASE_URL` to the **External** URL from Render → Postgres → **Connections**, and append `?sslmode=require` if it is missing.
+
+The app also builds without a live DB (CMS falls back to defaults). Runtime still needs a reachable database.
 
 1. Import the same GitHub repo in [Vercel](https://vercel.com).
 2. Framework: Next.js. Region: **Frankfurt (`fra1`)** — already in `vercel.json`.
@@ -76,7 +88,7 @@ Copy the service URL (e.g. `https://yugnet-api.onrender.com`) and the generated 
 | `NEXT_PUBLIC_SITE_URL` | `https://www.your-domain.lr` (or your `*.vercel.app` URL) |
 | `API_BACKEND_URL` | `https://yugnet-api.onrender.com` (**no trailing slash**) |
 | `AUTH_SECRET` | **Same value as Render** |
-| `DATABASE_URL` | **Same Postgres URL as Render** (Server Components still query the DB) |
+| `DATABASE_URL` | Render Postgres **External** URL + `?sslmode=require` (never the internal `dpg-…-a` host) |
 | `COOKIE_SAMESITE` | `lax` |
 | `COOKIE_SECURE` | `true` |
 
@@ -129,7 +141,8 @@ Change these passwords after the first production seed.
 
 | Symptom | Likely cause |
 |---|---|
-| `/api/health` 503 | `DATABASE_URL` wrong or Postgres not ready |
+| `/api/health` 503 | Wrong `DATABASE_URL`, or Vercel using Render **internal** host |
+| Build fails: `Can't reach database server at dpg-…` | Build-time DB access — fixed in app; also use **External** URL on Vercel |
 | Login works on Wi‑Fi, fails on Lonestar | Hitting Render URL cross-origin, or free-tier cold start |
 | 401 after login on Vercel | `AUTH_SECRET` mismatch between Vercel and Render |
 | Uploads 404 | Disk not mounted / `UPLOAD_DIR` unset on Render |

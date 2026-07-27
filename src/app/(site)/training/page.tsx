@@ -42,10 +42,17 @@ const hubs = [
 ] as const;
 
 export default async function TrainingHomePage() {
-  const [courseCount, lecturerCount] = await Promise.all([
-    prisma.course.count({ where: { status: "PUBLISHED" } }),
-    prisma.instructor.count({ where: { published: true } }),
-  ]);
+  const { courseCount, lecturerCount } = await (async () => {
+    try {
+      const [courses, lecturers] = await Promise.all([
+        prisma.course.count({ where: { status: "PUBLISHED" } }),
+        prisma.instructor.count({ where: { published: true } }),
+      ]);
+      return { courseCount: courses, lecturerCount: lecturers };
+    } catch {
+      return { courseCount: 0, lecturerCount: 0 };
+    }
+  })();
 
   return (
     <>

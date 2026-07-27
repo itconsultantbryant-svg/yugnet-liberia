@@ -4,6 +4,9 @@ import { brand } from "@/lib/brand";
 import { getSeoSettings } from "@/lib/cms-server";
 import "./globals.css";
 
+/** CMS + training pages need the DB at request time, not during `next build`. */
+export const dynamic = "force-dynamic";
+
 const display = Sora({
   variable: "--font-sora",
   subsets: ["latin"],

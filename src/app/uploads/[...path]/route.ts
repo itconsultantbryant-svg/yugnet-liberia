@@ -7,13 +7,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function uploadRoot() {
-  if (process.env.UPLOAD_DIR) return process.env.UPLOAD_DIR;
-  // Scope cwd so Turbopack NFT does not trace the whole project.
-  return path.join(
-    /* turbopackIgnore: true */ process.cwd(),
-    "public",
-    "uploads",
-  );
+  // Prefer absolute UPLOAD_DIR on Render. Avoid process.cwd() so Turbopack
+  // does not NFT-trace the whole repository during build.
+  return process.env.UPLOAD_DIR || path.join("public", "uploads");
 }
 
 function contentTypeFor(filePath: string) {

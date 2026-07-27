@@ -13,12 +13,16 @@ export const dynamic = "force-dynamic";
 type Params = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { slug } = await params;
-  const course = await prisma.course.findFirst({
-    where: { slug, status: "PUBLISHED" },
-  });
-  if (!course) return { title: "Course" };
-  return { title: course.title, description: course.description };
+  try {
+    const { slug } = await params;
+    const course = await prisma.course.findFirst({
+      where: { slug, status: "PUBLISHED" },
+    });
+    if (!course) return { title: "Course" };
+    return { title: course.title, description: course.description };
+  } catch {
+    return { title: "Course" };
+  }
 }
 
 export default async function CourseDetailPage({ params }: Params) {
