@@ -7,17 +7,17 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "prisma migrate reset --force",
-    "db:studio": "prisma studio",
+    "db:migrate": "bash scripts/with-db-url.sh npx prisma migrate dev",
+    "db:deploy": "bash scripts/with-db-url.sh npx prisma migrate deploy",
+    "db:seed": "bash scripts/with-db-url.sh npx tsx prisma/seed.ts",
+    "db:reset": "bash scripts/with-db-url.sh npx prisma migrate reset --force",
+    "db:studio": "bash scripts/with-db-url.sh npx prisma studio",
     "postinstall": "prisma generate",
-    "start:prod": "prisma migrate deploy && next start",
+    "start:prod": "bash scripts/with-db-url.sh npx prisma migrate deploy && next start",
     "start:render": "bash scripts/start-render.sh"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "bash scripts/with-db-url.sh npx tsx prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

@@ -2,8 +2,19 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { CMS_SECTIONS, DEFAULT_SEO } from "../src/lib/cms";
 import { PERMISSIONS, ROLE_DEFAULTS } from "../src/lib/permissions";
+import { applyDatabaseUrl } from "../src/lib/resolve-database-url";
+
+applyDatabaseUrl();
 
 const prisma = new PrismaClient();
+
+if (!process.env.DATABASE_URL?.startsWith("postgres")) {
+  throw new Error(
+    "DATABASE_URL is missing or invalid. In Render Shell run:\n" +
+      '  DATABASE_URL="$DATABASE_URL_EXTERNAL" npm run db:seed\n' +
+      "Or set DATABASE_URL_EXTERNAL to the Postgres External Database URL.",
+  );
+}
 
 async function main() {
   for (const perm of PERMISSIONS) {
