@@ -30,7 +30,18 @@ Browser (Lonestar / Orange / Wi‑Fi)
 
 1. Push this repo to GitHub.
 2. In [Render](https://dashboard.render.com) → **New** → **Blueprint** → select the repo (`render.yaml`).
-3. Set these env vars when prompted (`sync: false`):
+3. **Existing services do not auto-update from `render.yaml`.** In the service → **Settings**, set:
+
+| Setting | Value |
+|---|---|
+| Branch | `main` |
+| Build Command | `npm ci --include=dev && npx prisma generate && npm run build` |
+| Start Command | `npx prisma migrate deploy && npm run start` |
+| Health Check Path | `/api/health` |
+
+   Then **Manual Deploy** → **Deploy latest commit** (must show commit `b5ccf85` or newer — not `38cdb16`).
+
+4. Set these env vars when prompted (`sync: false`):
 
 | Variable | Example |
 |---|---|
@@ -38,13 +49,13 @@ Browser (Lonestar / Orange / Wi‑Fi)
 | `NEXT_PUBLIC_SITE_URL` | `https://www.your-domain.lr` |
 | Cron `HEALTH_URL` | `https://yugnet-api.onrender.com/api/health` |
 
-4. After first deploy succeeds, seed once (Render Shell or one-off job):
+5. After first deploy succeeds, seed once (Render Shell or one-off job):
 
 ```bash
 npm run db:seed
 ```
 
-5. Confirm health:
+6. Confirm health:
 
 ```bash
 curl -fsS https://yugnet-api.onrender.com/api/health
