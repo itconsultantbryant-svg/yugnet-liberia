@@ -13,7 +13,7 @@ const modules = [
   { href: "/admin/users", label: "Users", blurb: "Create users, assign roles & overrides" },
   { href: "/admin/roles", label: "Roles & Permissions", blurb: "Edit the permission matrix" },
   { href: "/admin/audit", label: "Audit Log", blurb: "Who did what, when" },
-  { href: "/admin/training", label: "Training Management", blurb: "Phase 4+ — courses & more" },
+  { href: "/admin/training", label: "Training Management", blurb: "Courses, instructors, students & enrollments" },
 ] as const;
 
 export default async function AdminDashboardPage() {
@@ -35,7 +35,7 @@ export default async function AdminDashboardPage() {
             Welcome{session ? `, ${session.name.split(" ")[0]}` : ""}
           </h1>
           <p className="mt-2 max-w-2xl text-muted">
-            Phase 3 CMS is live. Edit public website content and see it update without a deploy.
+            Phase 6 student management is live — roster, manual enroll, and status updates under Training.
           </p>
         </div>
       </div>

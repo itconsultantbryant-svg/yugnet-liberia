@@ -42,6 +42,7 @@ export async function POST(req: Request) {
       phone: parsed.data.phone?.trim() || null,
       passwordHash,
       roleId: studentRole.id,
+      studentProfile: { create: {} },
     },
   });
 

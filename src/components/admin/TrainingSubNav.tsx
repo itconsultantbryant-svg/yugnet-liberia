@@ -8,6 +8,7 @@ const links = [
   { href: "/admin/training/courses", label: "Courses" },
   { href: "/admin/training/categories", label: "Categories" },
   { href: "/admin/training/instructors", label: "Instructors" },
+  { href: "/admin/training/students", label: "Students" },
 ];
 
 export function TrainingSubNav() {

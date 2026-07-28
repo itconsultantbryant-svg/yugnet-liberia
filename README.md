@@ -57,8 +57,9 @@ Blueprint: `render.yaml` · Vercel: `vercel.json`
 - **Phase 2:** Roles, permissions, auth, user management, audit log
 - **Phase 3:** Website CMS — pages/sections, media, testimonials, contact inbox, SEO
 - **Phase 4:** Training courses, categories, instructors (Admin + public catalog)
-- **Phase 5 (current):** Public Training Hub enrollment — signup/login under `/training`, multi-step enroll, student dashboard
-- **Next:** Phase 6 — Admin students & enrollment management
+- **Phase 5:** Public Training Hub enrollment — signup/login under `/training`, multi-step enroll, student dashboard
+- **Phase 6 (current):** Admin students & enrollment management (roster, manual enroll, status)
+- **Next:** Phase 7 — Grades, attendance, or certificates (per product roadmap)
 
 ### Demo accounts (after `npm run db:seed`)
 

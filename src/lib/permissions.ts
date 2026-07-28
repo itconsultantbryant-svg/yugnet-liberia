@@ -34,6 +34,7 @@ export const ROLE_DEFAULTS: Record<string, PermissionKey[]> = {
   Instructor: [
     "courses.view",
     "students.view",
+    "students.enroll",
     "grades.submit",
     "attendance.mark",
     "attendance.view",
