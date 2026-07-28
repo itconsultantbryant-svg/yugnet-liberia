@@ -112,7 +112,7 @@ export function Footer() {
           <p>
             © {year} {brand.name}. All rights reserved.
           </p>
-          <p>Youth · Community · Sustainable Development · Liberia</p>
+          <p>Powered by <a href="https://www.softwarevalalib.app" target="_blank" rel="noopener noreferrer">Software Vala Liberia, Inc.</a></p>
         </div>
       </div>
     </footer>
